@@ -1,0 +1,157 @@
+<!--MA4825 Menu User Interface-->
+
+<html>
+
+<style>
+.header
+{
+    background-color:#FFFFFF;
+    padding:40px 5px 10px 5px;
+    text-align:center;
+}
+
+.headertitle
+{
+  background-color:#eff7ff;
+  padding:3px 5px 8px 5px;
+  text-align:center;
+}
+
+.selectoption
+{
+  padding: 10px 15px 10px 15px;
+  display:block;
+  width:100%;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+form
+{
+  padding: 30px;
+}
+
+.bodyclass
+{
+  background-color:#ffffff;
+  color:#777;
+}
+
+.row
+{
+  margin:20px;
+}
+
+#send_result
+{
+  margin:20px 0 20px 0;
+}
+
+</style>
+
+<head>
+  <title>MA4825 restaurant</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script>
+    $(function(){
+      $('#submit').click(function(e){
+        e.preventDefault();
+        $.ajax({
+          url:'/script',
+          data: $('form').serialize(),
+          type: 'POST',
+          success: function(response) {
+            if(response=="success")
+            {
+              document.getElementById("send_result").innerHTML = '<div class="alert alert-success" role="alert">Order success</div>';
+              console.log(response);
+            }
+            else if(response=="notfoundError")
+            {
+              document.getElementById("send_result").innerHTML = '<div class="alert alert-danger" role="alert">Error : Robot not found</div>';
+              console.log(response);
+            }
+            else if(response=="usedError")
+            {
+              document.getElementById("send_result").innerHTML = '<div class="alert alert-danger" role="alert">Error : Robot is in use</div>';
+              console.log(response);
+            }
+            else if(response=="otherError")
+            {
+              document.getElementById("send_result").innerHTML = '<div class="alert alert-danger" role="alert">Error : Unknown Error</div>';
+              console.log(response);
+            }
+          },
+          error: function(error){
+            console.log(error);
+          }
+        });
+      });
+    });
+  </script>
+</head>
+
+<body class="bodyclass">
+  <div>
+    <div class="header">
+      <img src="{{ url_for('static', filename='dinoresto.png') }}" height="38px">
+      <!--img src="mir.png" class="img-rounded"  style ="width:15%;" alt="Cinque Terre"-->
+    </div>
+  </div>
+  <div class="container">
+    <div class="col-sm-6 col-sm-offset-3">
+      <form class="form-group" method="post" role="form">
+        <label for="table">Table number :</label>
+        <select name="table" class="selectoption" id="table">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <br>
+        <label for="food">Menu :</label>
+        <select name="food" class="selectoption" id="food">
+          <option value="red">Red</option>
+          <option value="yellow">Yellow</option>
+          <option value="blue">Blue</option>
+        </select>
+        <div id="send_result"></div>
+        <input type="submit" class="btn btn-default" id="submit">
+        
+      </form>
+    </div>
+    
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+ 
+        {% for message in messages %}
+            {% if "Error" not in message[1]: %}
+                <div class="alert alert-info">
+                <strong>Success! </strong> {{ message[1] }}
+                </div>
+            {% endif %}
+ 
+            {% if "Error" in message[1]: %}
+                <div class="alert alert-warning">
+                {{ message[1] }}
+                </div>
+            {% endif %}
+        {% endfor %}
+            {% endif %}
+        {% endwith %}
+  </div>
+</body>
+
+</html>
